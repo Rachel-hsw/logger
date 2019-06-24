@@ -1,27 +1,28 @@
-package com.orhanobut.logger;
+package com.orhanobut.sample;
 
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.orhanobut.logger.LogStrategy;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.UUID;
 
-import static com.orhanobut.logger.Utils.checkNotNull;
-
 public class ExpLogStrategy implements LogStrategy {
-  @NonNull private final Handler handler;
+  @NonNull
+  private final Handler handler;
 
   public ExpLogStrategy(@NonNull Handler handler) {
-    this.handler = checkNotNull(handler);
+    this.handler = Utils.checkNotNull(handler);
   }
 
-  @Override public void log(int level, @Nullable String tag, @NonNull String message) {
-    checkNotNull(message);
+  @Override
+  public void log(int level, @Nullable String tag, @NonNull String message) {
+    Utils.checkNotNull(message);
 
     // do nothing on the calling thread, simply pass the tag/msg to the background thread
     handler.sendMessage(handler.obtainMessage(level, message));
@@ -29,17 +30,19 @@ public class ExpLogStrategy implements LogStrategy {
 
   static class WriteHandler extends Handler {
 
-    @NonNull private final String folder;
+    @NonNull
+    private final String folder;
     private final int maxFileSize;
 
     WriteHandler(@NonNull Looper looper, @NonNull String folder, int maxFileSize) {
-      super(checkNotNull(looper));
-      this.folder = checkNotNull(folder);
+      super(Utils.checkNotNull(looper));
+      this.folder = Utils.checkNotNull(folder);
       this.maxFileSize = maxFileSize;
     }
 
     @SuppressWarnings("checkstyle:emptyblock")
-    @Override public void handleMessage(@NonNull Message msg) {
+    @Override
+    public void handleMessage(@NonNull Message msg) {
       String content = (String) msg.obj;
 
       FileWriter fileWriter = null;
@@ -70,8 +73,8 @@ public class ExpLogStrategy implements LogStrategy {
      * @param fileWriter an instance of FileWriter already initialised to the correct file
      */
     private void writeLog(@NonNull FileWriter fileWriter, @NonNull String content) throws IOException {
-      checkNotNull(fileWriter);
-      checkNotNull(content);
+      Utils.checkNotNull(fileWriter);
+      Utils.checkNotNull(content);
 
       fileWriter.append(content);
     }
@@ -81,18 +84,21 @@ public class ExpLogStrategy implements LogStrategy {
      *
      * @return
      */
-    public String getUUID32() {
+    public static String getUUID32() {
       String uuid = UUID.randomUUID().toString().replace("-", "").toLowerCase();
       return uuid;
     }
 
     /**
-     * 更改为，文件名为随机UUID,文件扩展名为txt
+     * 更改为文件名为UUID,文件扩展名为txt.这样处理的话，每次打印日志都会生成新的文件名。导致的后果是每个文件只记录一行日志。
+     *
+     * @param folderName
+     * @return
      */
     private File getLogFile(@NonNull String folderName) {
-      String fileName = "hsw"+getUUID32();
-      checkNotNull(folderName);
-      checkNotNull(fileName);
+      String fileName = "hsw" + getUUID32();
+      Utils.checkNotNull(folderName);
+      Utils.checkNotNull(fileName);
 
       File folder = new File(folderName);
       if (!folder.exists()) {

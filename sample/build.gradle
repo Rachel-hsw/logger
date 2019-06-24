@@ -17,5 +17,5 @@ android {
 }
 
 dependencies {
-  implementation project(":logger")
+  implementation 'com.orhanobut:logger:2.2.0'
 }

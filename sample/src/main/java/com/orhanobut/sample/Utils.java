@@ -1,4 +1,4 @@
-package com.orhanobut.logger;
+package com.orhanobut.sample;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

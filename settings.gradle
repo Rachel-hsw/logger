@@ -1,1 +1,1 @@
-include ':logger', ':sample'
+include ':sample'

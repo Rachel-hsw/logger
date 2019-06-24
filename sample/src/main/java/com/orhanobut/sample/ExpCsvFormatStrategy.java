@@ -1,17 +1,21 @@
-package com.orhanobut.logger;
+package com.orhanobut.sample;
 
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
+import com.orhanobut.logger.FormatStrategy;
+import com.orhanobut.logger.LogStrategy;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import static com.orhanobut.logger.Utils.checkNotNull;
+import static com.orhanobut.sample.Utils.checkNotNull;
+
 
 public class ExpCsvFormatStrategy implements FormatStrategy {
 
@@ -19,10 +23,14 @@ public class ExpCsvFormatStrategy implements FormatStrategy {
   private static final String NEW_LINE_REPLACEMENT = " <br> ";
   private static final String SEPARATOR = ",";
 
-  @NonNull private final Date date;
-  @NonNull private final SimpleDateFormat dateFormat;
-  @NonNull private final LogStrategy logStrategy;
-  @Nullable private final String tag;
+  @NonNull
+  private final Date date;
+  @NonNull
+  private final SimpleDateFormat dateFormat;
+  @NonNull
+  private final LogStrategy logStrategy;
+  @Nullable
+  private final String tag;
 
   private ExpCsvFormatStrategy(@NonNull ExpCsvFormatStrategy.Builder builder) {
     checkNotNull(builder);
@@ -33,11 +41,13 @@ public class ExpCsvFormatStrategy implements FormatStrategy {
     tag = builder.tag;
   }
 
-  @NonNull public static ExpCsvFormatStrategy.Builder newBuilder() {
+  @NonNull
+  public static ExpCsvFormatStrategy.Builder newBuilder() {
     return new ExpCsvFormatStrategy.Builder();
   }
 
-  @Override public void log(int priority, @Nullable String onceOnlyTag, @NonNull String message) {
+  @Override
+  public void log(int priority, @Nullable String onceOnlyTag, @NonNull String message) {
     checkNotNull(message);
 
     String tag = formatTag(onceOnlyTag);
@@ -45,37 +55,31 @@ public class ExpCsvFormatStrategy implements FormatStrategy {
     date.setTime(System.currentTimeMillis());
 
     StringBuilder builder = new StringBuilder();
-
-    // machine-readable date/time
-    builder.append(Long.toString(date.getTime()));
+//        builder.append(Long.toString(date.getTime()));
 
     // human-readable date/time
-    builder.append(SEPARATOR);
+    builder.append("[");
     builder.append(dateFormat.format(date));
-
-    // level
-    builder.append(SEPARATOR);
-    builder.append(Utils.logLevel(priority));
-
-    // tag
-    builder.append(SEPARATOR);
-    builder.append(tag);
-
-    // message
+    builder.append("]");
+    if (TextUtils.isEmpty(tag)) {
+      builder.append(tag);
+      builder.append(" ");
+    }
+    // message这也是换行符,功能和"\n"是一致的,但是此种写法屏蔽了 Windows和Linux的区别 ，更保险一些.
     if (message.contains(NEW_LINE)) {
       // a new line would break the CSV format, so we replace it here
       message = message.replaceAll(NEW_LINE, NEW_LINE_REPLACEMENT);
     }
-    builder.append(SEPARATOR);
+
     builder.append(message);
 
     // new line
     builder.append(NEW_LINE);
-
     logStrategy.log(priority, tag, builder.toString());
   }
 
-  @Nullable private String formatTag(@Nullable String tag) {
+  @Nullable
+  private String formatTag(@Nullable String tag) {
     if (!Utils.isEmpty(tag) && !Utils.equals(this.tag, tag)) {
       return this.tag + "-" + tag;
     }
@@ -88,37 +92,42 @@ public class ExpCsvFormatStrategy implements FormatStrategy {
     Date date;
     SimpleDateFormat dateFormat;
     LogStrategy logStrategy;
-    String tag = "PRETTY_LOGGER";
+    String tag = "";
 
     private Builder() {
     }
 
-    @NonNull public ExpCsvFormatStrategy.Builder date(@Nullable Date val) {
+    @NonNull
+    public ExpCsvFormatStrategy.Builder date(@Nullable Date val) {
       date = val;
       return this;
     }
 
-    @NonNull public ExpCsvFormatStrategy.Builder dateFormat(@Nullable SimpleDateFormat val) {
+    @NonNull
+    public ExpCsvFormatStrategy.Builder dateFormat(@Nullable SimpleDateFormat val) {
       dateFormat = val;
       return this;
     }
 
-    @NonNull public ExpCsvFormatStrategy.Builder logStrategy(@Nullable LogStrategy val) {
+    @NonNull
+    public ExpCsvFormatStrategy.Builder logStrategy(@Nullable LogStrategy val) {
       logStrategy = val;
       return this;
     }
 
-    @NonNull public ExpCsvFormatStrategy.Builder tag(@Nullable String tag) {
+    @NonNull
+    public ExpCsvFormatStrategy.Builder tag(@Nullable String tag) {
       this.tag = tag;
       return this;
     }
 
-    @NonNull public ExpCsvFormatStrategy build() {
+    @NonNull
+    public ExpCsvFormatStrategy build() {
       if (date == null) {
         date = new Date();
       }
       if (dateFormat == null) {
-        dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss.SSS", Locale.UK);
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.UK);
       }
       if (logStrategy == null) {
         String diskPath = Environment.getExternalStorageDirectory().getAbsolutePath();

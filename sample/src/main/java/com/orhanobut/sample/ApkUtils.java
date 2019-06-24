@@ -5,12 +5,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
-import java.util.UUID;
-// 要申请的权限
-
-/**
- * Created by Eason on 2018/7/24 .
- */
 public class ApkUtils {
   private static String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 

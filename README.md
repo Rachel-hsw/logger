@@ -1,8 +1,8 @@
 增加自定义Logger的打印策略：修改日志名称和存储路径
 
-#master分支为clone源代码后，直接在上面修改
-#depence分支则是建立依赖后修改
-#[我的博客地址入口][1]
+# master分支为clone源代码后，直接在上面修改
+# depence分支则是建立依赖后修改
+# [我的博客地址入口][1]
 
 
 [1]: https://blog.csdn.net/changhuzichangchang/article/details/93167637#34_143
